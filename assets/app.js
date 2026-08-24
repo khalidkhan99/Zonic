@@ -54,7 +54,6 @@
   var heroOnScreen = true;
   var started = false;
   var target = 0, shown = 0, rafId = null, lastTick = 0;
-  var seekBusy = false, pendingTime = null;
   var loadStart = 0;
   var loadK = 0;
 
@@ -64,18 +63,11 @@
     return clamp((window.scrollY - heroSec.offsetTop) / range, 0, 1);
   }
 
-  function requestSeek(t) {
+  function seekVideo(t) {
     if (!video.duration) return;
     t = clamp(t, 0, video.duration - 0.001);
-    if (seekBusy) { pendingTime = t; return; }
-    seekBusy = true;
-    try { video.currentTime = t; } catch (e) { seekBusy = false; pendingTime = null; }
+    try { video.currentTime = t; } catch (e) {}
   }
-  video.addEventListener('seeked', function () {
-    seekBusy = false;
-    if (pendingTime !== null) { var t = pendingTime; pendingTime = null; requestSeek(t); }
-  });
-  video.addEventListener('error', function () { seekBusy = false; pendingTime = null; });
 
   function startBlobFetch() {
     if (started) return;
@@ -126,7 +118,7 @@
     video.load();
     video.addEventListener('canplay', function () {
       heroReady = true;
-      requestSeek(heroProgress() * video.duration);
+      seekVideo(heroProgress() * video.duration);
       stage.classList.add('video-ready');
     }, { once: true });
   }
@@ -193,7 +185,7 @@
       shown += (target - shown) * (1 - Math.pow(1 - k, dt / 16.667));
       if (Math.abs(target - shown) < 0.0005) { shown = target; }
       else busy = true;
-      if (heroReady) requestSeek(shown * video.duration);
+      if (heroReady) seekVideo(shown * video.duration);
       updateCaptions(shown);
     }
     if (wavesDirty || busy) { if (updateWaves()) busy = true; else wavesDirty = false; }
