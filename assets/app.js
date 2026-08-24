@@ -41,9 +41,11 @@
       op: -1, k: -1
     };
   });
-  var VIDEO_URL = 'assets/hero-scrub.mp4';
+  var SMALL_VID = window.matchMedia('(max-width: 720px)');
+  var VIDEO_URL = SMALL_VID.matches ? 'assets/hero-scrub-sm.mp4' : 'assets/hero-scrub.mp4';
   var POSTER_URL = 'assets/hero-poster.jpg';
-  var VIDEO_BYTES = 1441082;
+  var VIDEO_BYTES = SMALL_VID.matches ? 273709 : 1441082;
+  var LERP_K = window.matchMedia('(pointer: coarse)').matches ? 0.45 : 0.28;
 
   var scrubOn = false;
   var heroReady = false;
@@ -126,6 +128,9 @@
   function finishBlob(blob) {
     ring.style.setProperty('--ld', 0);
     stage.classList.remove('loading');
+    video.muted = true;
+    video.playsInline = true;
+    video.setAttribute('playsinline', '');
     video.src = URL.createObjectURL(blob);
     video.load();
     video.addEventListener('error', failVideo, { once: true });
@@ -196,7 +201,7 @@
     var busy = false;
 
     if (scrubOn && heroOnScreen) {
-      var k = 0.28;
+      var k = LERP_K;
       shown += (target - shown) * (1 - Math.pow(1 - k, dt / 16.667));
       if (Math.abs(target - shown) < 0.0005) { shown = target; }
       else busy = true;
