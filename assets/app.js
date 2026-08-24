@@ -21,10 +21,6 @@
   var rm = function () { return reduceMQ.matches; };
 
   var GATES = [
-    '(max-width: 720px)',
-    '(orientation: portrait) and (max-width: 1024px)',
-    '(orientation: portrait) and (pointer: coarse)',
-    '(orientation: landscape) and (pointer: coarse) and (max-height: 560px)',
     '(prefers-reduced-motion: reduce)'
   ];
   var MQLS = GATES.map(function (q) { return window.matchMedia(q); });
