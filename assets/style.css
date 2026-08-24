@@ -175,8 +175,7 @@ html:not(.force-static) body::before{
 @media (prefers-reduced-motion:reduce){
   .bands{display:none}
   .static-hero{display:flex}
-  .hero{height:auto}
-  .stage{position:relative;height:100vh;height:100svh}
+  .ring{display:none}
   #hero{opacity:1!important;transition:none!important}
 }
 html.force-static .bands,html.force-static #hero,html.force-static .ring{display:none}
