@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=7">
+<link rel="stylesheet" href="assets/style.css?v=8">
 <noscript><style>
   .bands,#hero,.ring{display:none}
   .static-hero{display:flex}
@@ -51,7 +51,10 @@
   <section class="hero" id="journey" aria-label="ZONIC introduction">
     <div class="stage">
       <div class="poster" aria-hidden="true"></div>
-      <video id="hero" muted playsinline preload="auto" poster="assets/hero-poster.jpg" aria-hidden="true" tabindex="-1" src="assets/hero-scrub.mp4"></video>
+      <video id="hero" muted playsinline preload="auto" poster="assets/hero-poster.jpg" aria-hidden="true" tabindex="-1">
+        <source src="assets/hero-scrub.webm" type="video/webm">
+        <source src="assets/hero-scrub.mp4" type="video/mp4">
+      </video>
       <svg class="ring" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="126" style="stroke-dashoffset:var(--ld,126)"/></svg>
       <div class="scrim" aria-hidden="true"></div>
 
