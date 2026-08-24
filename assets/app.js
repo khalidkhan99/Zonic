@@ -93,17 +93,27 @@
 
   function loadHeroDirect() {
     stage.classList.add('loading');
+    video.preload = 'auto';
     video.src = VIDEO_URL;
     video.load();
-    video.addEventListener('canplay', function () {
+    var readyFired = false;
+    function onReady() {
+      if (readyFired) return;
+      readyFired = true;
       stage.classList.remove('loading');
       heroReady = true;
       requestSeek(heroProgress() * video.duration);
       stage.classList.add('video-ready');
-    }, { once: true });
+    }
+    video.addEventListener('loadeddata', onReady, { once: true });
+    video.addEventListener('canplay', onReady, { once: true });
+    video.addEventListener('playing', onReady, { once: true });
+    setTimeout(onReady, 4000);
     video.addEventListener('error', function () {
-      stage.classList.remove('loading');
-      failVideo();
+      if (!readyFired) {
+        stage.classList.remove('loading');
+        failVideo();
+      }
     }, { once: true });
   }
 
