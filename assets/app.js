@@ -102,7 +102,6 @@
     video.addEventListener('loadedmetadata', markReady);
     video.addEventListener('loadeddata', markReady);
     video.addEventListener('canplay', markReady);
-    video.addEventListener('canplaythrough', markReady);
 
     setTimeout(function () { markReady(); }, 4000);
 
@@ -115,10 +114,7 @@
       }
     });
 
-    try {
-      video.load();
-      video.play().then(function () { video.pause(); }).catch(function () { markReady(); });
-    } catch (e) { markReady(); }
+    try { video.load(); } catch (e) { markReady(); }
   }
 
   function failVideo() {
