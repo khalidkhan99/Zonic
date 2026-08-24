@@ -47,7 +47,7 @@
   });
   var VIDEO_URL = 'assets/hero-scrub.mp4';
   var POSTER_URL = 'assets/hero-poster.jpg';
-  var VIDEO_BYTES = 1167697;
+  var VIDEO_BYTES = 539711;
 
   var scrubOn = false;
   var heroReady = false;
