@@ -21,10 +21,6 @@
   var rm = function () { return reduceMQ.matches; };
 
   var GATES = [
-    '(max-width: 720px)',
-    '(orientation: portrait) and (max-width: 1024px)',
-    '(orientation: portrait) and (pointer: coarse)',
-    '(orientation: landscape) and (pointer: coarse) and (max-height: 560px)',
     '(prefers-reduced-motion: reduce)'
   ];
   var MQLS = GATES.map(function (q) { return window.matchMedia(q); });
@@ -47,7 +43,7 @@
   });
   var VIDEO_URL = 'assets/hero-scrub.mp4';
   var POSTER_URL = 'assets/hero-poster.jpg';
-  var VIDEO_BYTES = 539711;
+  var VIDEO_BYTES = 1085212;
 
   var scrubOn = false;
   var heroReady = false;
@@ -56,6 +52,7 @@
   var target = 0, shown = 0, rafId = null, lastTick = 0;
   var loadStart = 0;
   var loadK = 0;
+  var lastTickAt = 0;
 
   function heroProgress() {
     var range = heroSec.offsetHeight - window.innerHeight;
@@ -66,6 +63,7 @@
   function seekVideo(t) {
     if (!video.duration) return;
     t = clamp(t, 0, video.duration - 0.001);
+    if (Math.abs(t - video.currentTime) < 0.002) return;
     try { video.currentTime = t; } catch (e) {}
   }
 
@@ -116,6 +114,7 @@
     stage.classList.remove('loading');
     video.src = URL.createObjectURL(blob);
     video.load();
+    video.addEventListener('error', failVideo, { once: true });
     video.addEventListener('canplay', function () {
       heroReady = true;
       seekVideo(heroProgress() * video.duration);
@@ -126,6 +125,7 @@
   function failVideo() {
     stage.classList.remove('loading');
     stage.classList.add('video-failed');
+    disableScrub();
   }
 
   function bandRamp(band) {
@@ -178,6 +178,7 @@
   function tick(now) {
     var dt = Math.min(100, now - (lastTick || now));
     lastTick = now;
+    lastTickAt = now;
     var busy = false;
 
     if (scrubOn && heroOnScreen) {
@@ -196,8 +197,18 @@
   var wavesDirty = true;
   function wake() { if (rafId === null) { lastTick = 0; rafId = requestAnimationFrame(tick); } }
 
+  function applyProgress() {
+    shown = target;
+    if (heroReady) seekVideo(shown * video.duration);
+    updateCaptions(shown);
+  }
   function onScroll() {
-    if (scrubOn) target = heroProgress();
+    if (scrubOn) {
+      target = heroProgress();
+      // rAF pauses during iOS momentum scrolling while scroll events keep firing;
+      // when the loop stalls, apply straight away so the video never freezes mid-flick
+      if (heroOnScreen && (!rafId || performance.now() - lastTickAt > 120)) applyProgress();
+    }
     wavesDirty = true;
     wake();
   }
@@ -403,8 +414,14 @@
     scrubScrollBound = false;
     if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
   }
+  function staticForced() {
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn && conn.saveData) return true;
+    var v = document.createElement('video');
+    return !v.canPlayType || !v.canPlayType('video/mp4');
+  }
   function applyHeroMode() {
-    if (GATES.some(function (q) { return window.matchMedia(q).matches; })) disableScrub();
+    if (staticForced() || GATES.some(function (q) { return window.matchMedia(q).matches; })) disableScrub();
     else enableScrub();
   }
   MQLS.forEach(function (m) { m.addEventListener('change', applyHeroMode); });
