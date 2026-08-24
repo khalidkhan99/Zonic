@@ -173,10 +173,11 @@ html:not(.force-static) body::before{
   .hold-bud{width:148px;height:148px}
 }
 @media (prefers-reduced-motion:reduce){
-  .bands,#hero,.ring{display:none}
+  .bands{display:none}
   .static-hero{display:flex}
   .hero{height:auto}
   .stage{position:relative;height:100vh;height:100svh}
+  #hero{opacity:1!important;transition:none!important}
 }
 html.force-static .bands,html.force-static #hero,html.force-static .ring{display:none}
 html.force-static .static-hero{display:flex}

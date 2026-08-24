@@ -459,6 +459,7 @@
   function applyHeroMode() {
     if (GATES.some(function (q) { return window.matchMedia(q).matches; })) disableScrub();
     else enableScrub();
+    initHeroOnce();
   }
   MQLS.forEach(function (m) { m.addEventListener('change', applyHeroMode); });
 
@@ -474,6 +475,7 @@
   reduceMQ.addEventListener('change', function (e) {
     if (e.matches) pinToFinalStates();
     else { applyHeroMode(); }
+    initHeroOnce();
   });
 
   document.addEventListener('visibilitychange', function () {
