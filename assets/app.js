@@ -43,7 +43,7 @@
   });
   var VIDEO_URL = 'assets/hero-scrub.mp4';
   var POSTER_URL = 'assets/hero-poster.jpg';
-  var VIDEO_BYTES = 1085212;
+  var VIDEO_BYTES = 1441082;
 
   var scrubOn = false;
   var heroReady = false;
@@ -61,10 +61,14 @@
     return clamp((window.scrollY - heroSec.offsetTop) / range, 0, 1);
   }
 
+  var lastSeekT = -1;
   function seekVideo(t) {
     if (!video.duration) return;
     t = clamp(t, 0, video.duration - 0.001);
     if (Math.abs(t - video.currentTime) < 0.002) return;
+    // never chase sub-frame movement: at 24fps a half-frame is ~21ms of timeline
+    if (lastSeekT >= 0 && Math.abs(t - lastSeekT) < 0.021) return;
+    lastSeekT = t;
     try { video.currentTime = t; } catch (e) {}
   }
 

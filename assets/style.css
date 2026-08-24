@@ -347,6 +347,8 @@ section{position:relative}
 @media (pointer:coarse){
   .btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
   .qa-list summary{min-height:44px}
+  .nav{backdrop-filter:none;background:linear-gradient(to bottom,rgba(10,14,20,.92),rgba(10,14,20,.55))}
+  html:not(.force-static) body::before{animation:none}
 }
 @media (max-width:880px){
   .cards{grid-template-columns:1fr;gap:1rem}
