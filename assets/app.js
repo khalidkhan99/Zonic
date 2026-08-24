@@ -49,6 +49,7 @@
   var heroReady = false;
   var heroOnScreen = true;
   var started = false;
+  var blobRetried = false;
   var target = 0, shown = 0, rafId = null, lastTick = 0;
   var loadStart = 0;
   var loadK = 0;
@@ -70,7 +71,16 @@
   function startBlobFetch() {
     if (started) return;
     started = true;
-    loadHeroBlob().catch(failVideo);
+    loadHeroBlob().catch(function () {
+      // one quiet retry for flaky mobile networks before falling back to the still hero
+      if (!blobRetried) {
+        blobRetried = true;
+        started = false;
+        setTimeout(startBlobFetch, 1200);
+      } else {
+        failVideo();
+      }
+    });
   }
 
   function initHeroOnce() {
@@ -82,7 +92,7 @@
   function loadHeroBlob() {
     stage.classList.add('loading');
     var ctrl = new AbortController();
-    var watchdog = setTimeout(function () { ctrl.abort(); }, 20000);
+    var watchdog = setTimeout(function () { ctrl.abort(); }, 40000);
     return fetch(VIDEO_URL, { priority: 'low', signal: ctrl.signal }).then(function (res) {
       if (!res.ok && !res.body) throw new Error('http ' + res.status);
       var total = Number(res.headers.get('Content-Length')) || VIDEO_BYTES;
@@ -93,7 +103,7 @@
         return reader.read().then(function (r) {
           if (r.done) { clearTimeout(watchdog); finishBlob(new Blob(chunks)); return; }
           clearTimeout(watchdog);
-          watchdog = setTimeout(function () { ctrl.abort(); }, 20000);
+          watchdog = setTimeout(function () { ctrl.abort(); }, 40000);
           chunks.push(r.value);
           got += r.value.length;
           var frac = Math.min(1, got / (total || 1));
