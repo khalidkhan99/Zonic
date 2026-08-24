@@ -415,8 +415,6 @@
     if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
   }
   function staticForced() {
-    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (conn && conn.saveData) return true;
     var v = document.createElement('video');
     return !v.canPlayType || !v.canPlayType('video/mp4');
   }
