@@ -41,7 +41,6 @@
       op: -1, k: -1
     };
   });
-  var VIDEO_URL = 'assets/hero-scrub.mp4';
   var POSTER_URL = 'assets/hero-poster.jpg';
 
   var scrubOn = false;
@@ -87,8 +86,6 @@
 
   function loadHeroVideo() {
     stage.classList.add('loading');
-    video.src = VIDEO_URL;
-    video.load();
 
     var done = false;
     function markReady() {
@@ -99,6 +96,8 @@
       stage.classList.add('video-ready');
       try { forceSeek(heroProgress() * (video.duration || 5.875)); } catch (e) {}
     }
+
+    if (video.readyState >= 2) { markReady(); return; }
 
     video.addEventListener('loadeddata', markReady);
     video.addEventListener('canplay', markReady);
