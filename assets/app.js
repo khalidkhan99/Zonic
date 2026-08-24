@@ -21,6 +21,10 @@
   var rm = function () { return reduceMQ.matches; };
 
   var GATES = [
+    '(max-width: 720px)',
+    '(orientation: portrait) and (max-width: 1024px)',
+    '(orientation: portrait) and (pointer: coarse)',
+    '(orientation: landscape) and (pointer: coarse) and (max-height: 560px)',
     '(prefers-reduced-motion: reduce)'
   ];
   var MQLS = GATES.map(function (q) { return window.matchMedia(q); });
@@ -41,11 +45,14 @@
       op: -1, k: -1
     };
   });
+  var VIDEO_URL = 'assets/hero-scrub.mp4';
   var POSTER_URL = 'assets/hero-poster.jpg';
+  var VIDEO_BYTES = 1167697;
 
   var scrubOn = false;
   var heroReady = false;
   var heroOnScreen = true;
+  var started = false;
   var target = 0, shown = 0, rafId = null, lastTick = 0;
   var seekBusy = false, pendingTime = null;
   var loadStart = 0;
@@ -70,51 +77,58 @@
   });
   video.addEventListener('error', function () { seekBusy = false; pendingTime = null; });
 
-  function forceSeek(t) {
-    if (!video.duration) return;
-    t = clamp(t, 0, video.duration - 0.001);
-    seekBusy = false;
-    pendingTime = null;
-    try { video.currentTime = t; } catch (e) {}
+  function startBlobFetch() {
+    if (started) return;
+    started = true;
+    loadHeroBlob().catch(failVideo);
   }
 
   function initHeroOnce() {
     if (initHeroOnce.done) return;
     initHeroOnce.done = true;
-    loadHeroVideo();
+    startBlobFetch();
   }
 
-  function loadHeroVideo() {
+  function loadHeroBlob() {
     stage.classList.add('loading');
-
-    var done = false;
-    function markReady() {
-      if (done) return;
-      done = true;
-      heroReady = true;
-      stage.classList.remove('loading');
-      stage.classList.add('video-ready');
-      try { forceSeek(heroProgress() * (video.duration || 5.875)); } catch (e) {}
-    }
-
-    if (video.readyState >= 2) { markReady(); return; }
-
-    video.addEventListener('loadedmetadata', markReady);
-    video.addEventListener('loadeddata', markReady);
-    video.addEventListener('canplay', markReady);
-
-    setTimeout(function () { markReady(); }, 4000);
-
-    video.addEventListener('error', function () {
-      if (!done) {
-        done = true;
-        heroReady = false;
-        stage.classList.remove('loading');
-        stage.classList.add('video-ready');
+    var ctrl = new AbortController();
+    var watchdog = setTimeout(function () { ctrl.abort(); }, 20000);
+    return fetch(VIDEO_URL, { priority: 'low', signal: ctrl.signal }).then(function (res) {
+      if (!res.ok && !res.body) throw new Error('http ' + res.status);
+      var total = Number(res.headers.get('Content-Length')) || VIDEO_BYTES;
+      if (!res.body) return res.blob().then(function (b) { finishBlob(b); return; });
+      var reader = res.body.getReader();
+      var chunks = [], got = 0, lastRing = 0;
+      function pump() {
+        return reader.read().then(function (r) {
+          if (r.done) { clearTimeout(watchdog); finishBlob(new Blob(chunks)); return; }
+          clearTimeout(watchdog);
+          watchdog = setTimeout(function () { ctrl.abort(); }, 20000);
+          chunks.push(r.value);
+          got += r.value.length;
+          var frac = Math.min(1, got / (total || 1));
+          var now = performance.now();
+          if (now - lastRing > 100 || frac === 1) {
+            lastRing = now;
+            ring.style.setProperty('--ld', Math.round(126 * (1 - frac)));
+          }
+          return pump();
+        });
       }
+      return pump();
     });
+  }
 
-    try { video.load(); } catch (e) { markReady(); }
+  function finishBlob(blob) {
+    ring.style.setProperty('--ld', 0);
+    stage.classList.remove('loading');
+    video.src = URL.createObjectURL(blob);
+    video.load();
+    video.addEventListener('canplay', function () {
+      heroReady = true;
+      requestSeek(heroProgress() * video.duration);
+      stage.classList.add('video-ready');
+    }, { once: true });
   }
 
   function failVideo() {
@@ -179,7 +193,7 @@
       shown += (target - shown) * (1 - Math.pow(1 - k, dt / 16.667));
       if (Math.abs(target - shown) < 0.0005) { shown = target; }
       else busy = true;
-      if (heroReady) forceSeek(shown * video.duration);
+      if (heroReady) requestSeek(shown * video.duration);
       updateCaptions(shown);
     }
     if (wavesDirty || busy) { if (updateWaves()) busy = true; else wavesDirty = false; }
@@ -400,7 +414,6 @@
   function applyHeroMode() {
     if (GATES.some(function (q) { return window.matchMedia(q).matches; })) disableScrub();
     else enableScrub();
-    initHeroOnce();
   }
   MQLS.forEach(function (m) { m.addEventListener('change', applyHeroMode); });
 
@@ -416,7 +429,6 @@
   reduceMQ.addEventListener('change', function (e) {
     if (e.matches) pinToFinalStates();
     else { applyHeroMode(); }
-    initHeroOnce();
   });
 
   document.addEventListener('visibilitychange', function () {

@@ -16,12 +16,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/style.css?v=9">
+<link rel="stylesheet" href="assets/style.css?v=3">
 <noscript><style>
   .bands,#hero,.ring{display:none}
   .static-hero{display:flex}
-  .hero{height:auto}
-  .stage{position:relative;height:100svh}
   .cards .card,.step-list li,.kicker,.sec-head h2,.sec-head .wave,.cta-art,.hold-pass{opacity:1!important;transform:none!important}
   .eq-divider i{height:22px}
   .wave path{stroke-dashoffset:0}
@@ -51,7 +49,7 @@
   <section class="hero" id="journey" aria-label="ZONIC introduction">
     <div class="stage">
       <div class="poster" aria-hidden="true"></div>
-      <video id="hero" muted playsinline preload="auto" poster="assets/hero-poster.jpg" aria-hidden="true" tabindex="-1" src="assets/hero-scrub.mp4"></video>
+      <video id="hero" preload="none" muted playsinline aria-hidden="true" tabindex="-1"></video>
       <svg class="ring" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="126" style="stroke-dashoffset:var(--ld,126)"/></svg>
       <div class="scrim" aria-hidden="true"></div>
 
@@ -249,7 +247,6 @@
   </div>
 </footer>
 
-<script src="assets/app.js?v=6"></script>
+<script src="assets/app.js?v=3"></script>
 </body>
 </html>
-
