@@ -73,16 +73,38 @@
   });
   video.addEventListener('error', function () { seekBusy = false; pendingTime = null; });
 
+  var isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
   function startBlobFetch() {
     if (started) return;
     started = true;
-    loadHeroBlob().catch(failVideo);
+    if (isMobile) {
+      loadHeroDirect();
+    } else {
+      loadHeroBlob().catch(failVideo);
+    }
   }
 
   function initHeroOnce() {
     if (initHeroOnce.done) return;
     initHeroOnce.done = true;
     startBlobFetch();
+  }
+
+  function loadHeroDirect() {
+    stage.classList.add('loading');
+    video.src = VIDEO_URL;
+    video.load();
+    video.addEventListener('canplay', function () {
+      stage.classList.remove('loading');
+      heroReady = true;
+      requestSeek(heroProgress() * video.duration);
+      stage.classList.add('video-ready');
+    }, { once: true });
+    video.addEventListener('error', function () {
+      stage.classList.remove('loading');
+      failVideo();
+    }, { once: true });
   }
 
   function loadHeroBlob() {
