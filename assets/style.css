@@ -80,7 +80,6 @@ html:not(.force-static) body::before{
 .stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--canvas)}
 .poster{position:absolute;inset:0;background-size:cover;background-position:center;pointer-events:none;z-index:1}
 #hero{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;will-change:transform;z-index:2}
-.stage.video-ready #hero{opacity:1}
 .ring{position:absolute;left:50%;top:50%;width:54px;height:54px;margin:-27px;color:var(--accent);opacity:0;transition:opacity .3s;z-index:6}
 .stage.loading .ring{opacity:1;animation:ringspin 1.1s linear infinite}
 @keyframes ringspin{to{transform:rotate(360deg)}}

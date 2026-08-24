@@ -99,21 +99,26 @@
 
     if (video.readyState >= 2) { markReady(); return; }
 
+    video.addEventListener('loadedmetadata', markReady);
     video.addEventListener('loadeddata', markReady);
     video.addEventListener('canplay', markReady);
-    video.addEventListener('playing', markReady);
+    video.addEventListener('canplaythrough', markReady);
 
-    setTimeout(function () { markReady(); }, 3000);
+    setTimeout(function () { markReady(); }, 4000);
 
     video.addEventListener('error', function () {
       if (!done) {
         done = true;
+        heroReady = false;
         stage.classList.remove('loading');
         stage.classList.add('video-ready');
       }
     });
 
-    try { video.load(); } catch (e) { markReady(); }
+    try {
+      video.load();
+      video.play().then(function () { video.pause(); }).catch(function () { markReady(); });
+    } catch (e) { markReady(); }
   }
 
   function failVideo() {
