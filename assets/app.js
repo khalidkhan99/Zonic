@@ -444,5 +444,28 @@
 
   window.addEventListener('resize', function () { wavesDirty = true; wake(); }, { passive: true });
 
+  // temporary diagnostics: visit with ?debug=1 to see live hero state on-device
+  if (new URLSearchParams(location.search).has('debug')) {
+    var dbg = document.createElement('div');
+    dbg.style.cssText = 'position:fixed;left:6px;top:56px;z-index:999;background:rgba(0,0,0,.88);color:#4f6;font:11px/1.55 monospace;padding:8px 10px;border-radius:8px;pointer-events:none;white-space:pre';
+    document.body.appendChild(dbg);
+    setInterval(function () {
+      dbg.textContent = [
+        'scrubOn : ' + scrubOn,
+        'ready   : ' + heroReady,
+        'failed  : ' + stage.classList.contains('video-failed'),
+        'forced  : ' + document.documentElement.classList.contains('force-static'),
+        'reduced : ' + reduceMQ.matches,
+        'innerH  : ' + window.innerHeight,
+        'stageH  : ' + stage.offsetHeight,
+        'heroH   : ' + heroSec.offsetHeight,
+        'vtime   : ' + (video.currentTime || 0).toFixed(2),
+        'vdur    : ' + (video.duration || 0).toFixed(2),
+        'netType : ' + (navigator.connection ? JSON.stringify({ sd: navigator.connection.saveData, eff: navigator.connection.effectiveType }) : 'n/a'),
+        'canMp4  : ' + (document.createElement('video').canPlayType('video/mp4') || 'NO')
+      ].join('\n');
+    }, 500);
+  }
+
   applyHeroMode();
 })();
