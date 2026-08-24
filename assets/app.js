@@ -43,12 +43,10 @@
   });
   var VIDEO_URL = 'assets/hero-scrub.mp4';
   var POSTER_URL = 'assets/hero-poster.jpg';
-  var VIDEO_BYTES = 1167697;
 
   var scrubOn = false;
   var heroReady = false;
   var heroOnScreen = true;
-  var started = false;
   var target = 0, shown = 0, rafId = null, lastTick = 0;
   var seekBusy = false, pendingTime = null;
   var loadStart = 0;
@@ -81,28 +79,16 @@
     try { video.currentTime = t; } catch (e) {}
   }
 
-  var isMobile = /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-  function startBlobFetch() {
-    if (started) return;
-    started = true;
-    if (isMobile) {
-      loadHeroMobile();
-    } else {
-      loadHeroBlob().catch(failVideo);
-    }
-  }
-
   function initHeroOnce() {
     if (initHeroOnce.done) return;
     initHeroOnce.done = true;
-    startBlobFetch();
+    loadHeroVideo();
   }
 
-  function loadHeroMobile() {
+  function loadHeroVideo() {
     stage.classList.add('loading');
-    video.preload = 'auto';
     video.src = VIDEO_URL;
+    video.load();
 
     var done = false;
     function markReady() {
@@ -111,19 +97,14 @@
       heroReady = true;
       stage.classList.remove('loading');
       stage.classList.add('video-ready');
+      try { forceSeek(heroProgress() * (video.duration || 5.875)); } catch (e) {}
     }
 
-    video.addEventListener('loadedmetadata', function () {
-      markReady();
-      forceSeek(heroProgress() * video.duration);
-    });
+    video.addEventListener('loadeddata', markReady);
     video.addEventListener('canplay', markReady);
     video.addEventListener('playing', markReady);
 
-    setTimeout(function () {
-      if (!done) markReady();
-      forceSeek(heroProgress() * (video.duration || 5.875));
-    }, 3000);
+    setTimeout(function () { markReady(); }, 3000);
 
     video.addEventListener('error', function () {
       if (!done) {
@@ -132,48 +113,6 @@
         stage.classList.add('video-ready');
       }
     });
-  }
-
-  function loadHeroBlob() {
-    stage.classList.add('loading');
-    var ctrl = new AbortController();
-    var watchdog = setTimeout(function () { ctrl.abort(); }, 20000);
-    return fetch(VIDEO_URL, { priority: 'low', signal: ctrl.signal }).then(function (res) {
-      if (!res.ok && !res.body) throw new Error('http ' + res.status);
-      var total = Number(res.headers.get('Content-Length')) || VIDEO_BYTES;
-      if (!res.body) return res.blob().then(function (b) { finishBlob(b); return; });
-      var reader = res.body.getReader();
-      var chunks = [], got = 0, lastRing = 0;
-      function pump() {
-        return reader.read().then(function (r) {
-          if (r.done) { clearTimeout(watchdog); finishBlob(new Blob(chunks)); return; }
-          clearTimeout(watchdog);
-          watchdog = setTimeout(function () { ctrl.abort(); }, 20000);
-          chunks.push(r.value);
-          got += r.value.length;
-          var frac = Math.min(1, got / (total || 1));
-          var now = performance.now();
-          if (now - lastRing > 100 || frac === 1) {
-            lastRing = now;
-            ring.style.setProperty('--ld', Math.round(126 * (1 - frac)));
-          }
-          return pump();
-        });
-      }
-      return pump();
-    });
-  }
-
-  function finishBlob(blob) {
-    ring.style.setProperty('--ld', 0);
-    stage.classList.remove('loading');
-    video.src = URL.createObjectURL(blob);
-    video.load();
-    video.addEventListener('canplay', function () {
-      heroReady = true;
-      requestSeek(heroProgress() * video.duration);
-      stage.classList.add('video-ready');
-    }, { once: true });
   }
 
   function failVideo() {
@@ -238,7 +177,7 @@
       shown += (target - shown) * (1 - Math.pow(1 - k, dt / 16.667));
       if (Math.abs(target - shown) < 0.0005) { shown = target; }
       else busy = true;
-      if (heroReady) { isMobile ? forceSeek(shown * video.duration) : requestSeek(shown * video.duration); }
+      if (heroReady) forceSeek(shown * video.duration);
       updateCaptions(shown);
     }
     if (wavesDirty || busy) { if (updateWaves()) busy = true; else wavesDirty = false; }
