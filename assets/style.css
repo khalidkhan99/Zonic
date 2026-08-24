@@ -157,6 +157,20 @@ html:not(.force-static) body::before{
   .btn-hero{padding:.8rem 1.3rem;font-size:.78rem}
   .scrim{background:radial-gradient(ellipse 130% 80% at 50% 50%,rgba(10,14,20,0) 30%,rgba(10,14,20,.66) 100%)}
   .cue{bottom:3vh}
+  .kicker{letter-spacing:.18em;font-size:.7rem}
+  .card-tag{letter-spacing:.2em}
+  .ticker-track span{letter-spacing:.16em}
+  .trust p{flex-direction:column;align-items:center;gap:.8rem;font-size:.88rem;letter-spacing:.04em;line-height:1.5}
+  .trust{padding:1.9rem 0}
+  .eq-divider{height:28px;padding:.5rem 0;gap:8px}
+  .step-list li{padding:1rem 1.05rem}
+  .qa-list summary{padding:.95rem 2.7rem .95rem 1.15rem}
+  .nav{padding:.65rem 1rem}
+  .brand-name{font-size:1rem}
+  .btn-nav{min-height:0;padding:.48rem .85rem;font-size:.62rem;letter-spacing:.06em}
+  .btn-big{padding:.95rem 1.7rem;font-size:.9rem}
+  .cta-art{margin-bottom:1.9rem;border-radius:16px}
+  .hold-bud{width:148px;height:148px}
 }
 @media (prefers-reduced-motion:reduce){
   .bands,#hero,.ring{display:none}
@@ -265,8 +279,8 @@ section{position:relative}
   width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;flex:none;
 }
 
-.trust{border-block:1px solid var(--hairline);background:rgba(18,24,38,.45);padding:1.6rem 0;text-align:center}
-.trust p{display:flex;flex-wrap:wrap;justify-content:center;gap:.9rem 2.4rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;letter-spacing:.14em;color:#cdd7e4}
+.trust{border-block:1px solid var(--hairline);background:rgba(18,24,38,.45);padding:2rem 0;text-align:center}
+.trust p{display:flex;flex-wrap:wrap;justify-content:center;gap:1rem 3rem;font-family:'JetBrains Mono',monospace;font-size:.84rem;letter-spacing:.11em;color:#cdd7e4}
 .trust span{display:inline-flex;align-items:center;gap:.6rem}
 .trust svg{color:var(--accent);flex:none}
 
@@ -336,6 +350,7 @@ section{position:relative}
 
 @media (pointer:coarse){
   .btn{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+  .btn-nav{min-height:0}
   .qa-list summary{min-height:44px}
 }
 @media (max-width:880px){
