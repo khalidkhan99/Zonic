@@ -112,6 +112,8 @@
         stage.classList.add('video-ready');
       }
     });
+
+    try { video.load(); } catch (e) { markReady(); }
   }
 
   function failVideo() {
