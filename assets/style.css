@@ -117,7 +117,7 @@ html:not(.force-static) body::before{
 .dual .sharp{position:absolute;inset:0}
 .zn{color:var(--accent)}
 
-.w{display:inline-block;white-space:pre;will-change:transform,opacity;transform:translateZ(0)}
+.w{display:inline-block;white-space:pre;will-change:transform,opacity}
 .c{display:inline-block}
 
 .fx-rise .w{--kc:clamp(0,(var(--k,0) - var(--th,0))*2.8,1);opacity:var(--kc);transform:translateY(calc((1 - var(--kc))*14px))}
