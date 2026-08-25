@@ -15,7 +15,7 @@
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{overflow-x:hidden;overflow-x:clip;scroll-behavior:smooth}
-body{overflow-x:hidden;overflow-x:clip;background:var(--canvas);color:var(--text-primary);font-family:'Manrope',sans-serif;font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden;overflow-x:clip;background:var(--canvas);color:var(--text-primary);font-family:'Manrope',sans-serif;font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 img,svg,video{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
@@ -240,7 +240,7 @@ section{position:relative}
 .charged .card-art{border-color:rgba(0,229,255,.4)}
 
 .hold-stage{margin-top:clamp(3rem,6vw,4.5rem);display:flex;flex-direction:column;align-items:center;gap:1rem;text-align:center}
-.hold-bud{position:relative;width:170px;height:170px;cursor:pointer;touch-action:none;-webkit-user-select:none;user-select:none}
+.hold-bud{position:relative;width:170px;height:170px;cursor:pointer;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
 .hold-bud svg{position:relative;z-index:2;transition:transform .5s var(--ease);filter:drop-shadow(0 6px 24px rgba(0,229,255,.18))}
 .hold-bud:active svg{transform:scale(.97)}
 .ringset i{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(0,229,255,.5);opacity:calc(var(--hold,0)*(1 - var(--n,0)/3.2));transform:scale(calc(1 + var(--hold,0)*1.5*var(--n,0)))}
