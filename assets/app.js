@@ -45,7 +45,7 @@
   var VIDEO_URL = SMALL_VID.matches ? 'assets/hero-scrub-sm.mp4' : 'assets/hero-scrub.mp4';
   var POSTER_URL = 'assets/hero-poster.jpg';
   var VIDEO_BYTES = SMALL_VID.matches ? 273709 : 1441082;
-  var LERP_K = window.matchMedia('(pointer: coarse)').matches ? 0.32 : 0.28;
+  var LERP_K = window.matchMedia('(pointer: coarse)').matches ? 0.6 : 0.55;
 
   var scrubOn = false;
   var heroReady = false;
